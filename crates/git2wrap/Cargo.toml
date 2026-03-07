@@ -1,0 +1,13 @@
+[package]
+name = "git2wrap"
+edition = "2021"
+version.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+fs-err.workspace = true
+git2.workspace = true
+url.workspace = true
+
+[lints]
+workspace = true
