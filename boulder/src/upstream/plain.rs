@@ -122,6 +122,26 @@ pub struct StoredPlain {
     pub was_cached: bool,
 }
 
+impl StoredPlain {
+    pub async fn share(&self, dest_dir: &Path) -> Result<(), Error> {
+        let target = dest_dir.join(self.name.clone());
+
+        // Attempt hard link.
+        let result = fs::hard_link(&self.path, &target);
+        if let Err(err) = &result
+            && err.kind() == io::ErrorKind::CrossesDevices
+        {
+            // Source and destination paths
+            // reside on different filesystems.
+            // Copy it instead.
+            fs::copy(&self.path, &target).map(|_| ())
+        } else {
+            result
+        }
+        .map_err(Error::from)
+    }
+}
+
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Hash(String);
 
