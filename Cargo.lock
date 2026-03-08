@@ -277,6 +277,8 @@ dependencies = [
  "filetime",
  "fs-err",
  "futures-util",
+ "git2",
+ "git2wrap",
  "glob",
  "hex",
  "itertools 0.14.0",

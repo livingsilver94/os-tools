@@ -9,6 +9,7 @@ rust-version.workspace = true
 [dependencies]
 config = { path = "../crates/config" }
 container = { path = "../crates/container" }
+git2wrap = { path = "../crates/git2wrap" }
 moss = { path = "../moss" }
 tools_buildinfo = { path = "../crates/tools_buildinfo" }
 stone = { path = "../crates/stone" }
@@ -24,6 +25,7 @@ derive_more.workspace = true
 dirs.workspace = true
 elf.workspace = true
 filetime.workspace = true
+git2.workspace = true
 glob.workspace = true
 fs-err.workspace = true
 futures-util.workspace = true
