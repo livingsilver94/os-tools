@@ -41,7 +41,7 @@ impl Git {
             Ok(repo) => {
                 if !repo.has_ref(&self.ref_id) {
                     cached = false;
-                    repo.update()?
+                    repo.update(&[&self.ref_id])?
                 }
                 Ok(repo)
             }
@@ -58,10 +58,9 @@ impl Git {
 
         Ok(StoredGit {
             name: self.name().to_owned(),
-            path: dir,
             was_cached: cached,
-            uri: self.url.clone(),
-            resolved_hash: repo.reference(&self.ref_id)?.hash()?,
+            repo,
+            reference,
         })
     }
 
@@ -94,13 +93,28 @@ impl Git {
     }
 }
 
-#[derive(Clone)]
 pub struct StoredGit {
     pub name: String,
-    pub path: PathBuf,
     pub was_cached: bool,
-    pub uri: Url,
-    pub resolved_hash: String,
+    repo: git2wrap::Repository,
+    reference: String,
+}
+
+impl StoredGit {
+    pub async fn share(&self, dest_dir: &Path) -> Result<SharedGit, Error> {
+        Ok(SharedGit(
+            self.repo
+                .add_worktree(dest_dir, &self.repo.reference(&self.reference)?)?,
+        ))
+    }
+}
+
+struct SharedGit(git2wrap::Worktree);
+
+impl SharedGit {
+    pub fn remove(self) -> Result<(), Error> {
+        self.0.remove().map_err(Error::from)
+    }
 }
 
 #[derive(Debug, Error)]
